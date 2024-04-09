@@ -10,20 +10,20 @@ import numpy as np
 
 from .cosmology_params import CosmologyParams
 from .constants import H0_over_h, G, Mpc_cm
+from .mesh_metadata import MeshMetadata
 
 class SimulationMetadata:
     
     def __init__(self, filename):
-        
-        self.cosmology_params = CosmologyParams(filename)
-        
+        self.cosmology = CosmologyParams(filename)
+        self.mesh = MeshMetadata(filename)
         self.init_units()
         
     def init_units(self):
         
-        h  = self.cosmology_params['hubble_constant_now']
-        Om = self.cosmology_params['omega_matter_now']
-        zi = self.cosmology_params['initial_redshift']
+        h  = self.cosmology['hubble_constant_now']
+        Om = self.cosmology['omega_matter_now']
+        zi = self.cosmology['initial_redshift']
         
         # Density: 1 code_denisty = rho_to_cgs * (1 + z)**3 [g/cm**3]
         # (Note - this comes from comments made in 
@@ -32,7 +32,7 @@ class SimulationMetadata:
 
         # Length: 1 code_length = Li [CM Mpc/h] = Li / (1 + z) [Mpc/h] 
         #                       = length_to_cm / (1+z) [cm]
-        Li = self.cosmology_params['comoving_box_size']
+        Li = self.cosmology['comoving_box_size']
         self.length_to_cm = Mpc_cm * Li / h
 
         # Time: 1 code_time = time_to_s [s] 

@@ -29,6 +29,11 @@ param_file = glob.glob(snapshot_dir + '*.block_list')[0]
 tree = block_tree.BlockTree(param_file)
 
 
+#%%
+def process_block(block, start, rho, nds, div, rH2, tff, tcl, data):
+    pass
+
+
 #%% Find and read HDF5 files
 
 N_sites_per_block = md.mesh.get_bock_mesh_length()
@@ -58,6 +63,8 @@ for file in tree.files.keys():
         # Skip if block is not a leaf block.
         if not tree.is_leaf(block.name):
             continue
+        
+        process_block(block, start, rho, nds, div, rH2, tff, tcl, data)
         
         block_data   = data[block.enzo_name()]
         density      = np.array(block_data['field_density'])

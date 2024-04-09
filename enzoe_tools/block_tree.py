@@ -33,6 +33,9 @@ class BlockTree:
     def get_leaves(self):
         return [block 
                 for name, block in self.blocks.items() if self.is_leaf(name)]
+    
+    def get_num_leaves(self):
+        return len(self.get_leaves())
                 
                 
 class Block:
