@@ -11,13 +11,17 @@ import numpy as np
 from .cosmology_params import CosmologyParams
 from .constants import H0_over_h, G, Mpc_cm
 from .mesh_metadata import MeshMetadata
+from .block_tree import BlockTree
 
 class SimulationMetadata:
     
-    def __init__(self, filename):
-        self.cosmology = CosmologyParams(filename)
-        self.mesh = MeshMetadata(filename)
+    def __init__(self, param_file, block_list=None):
+        self.cosmology = CosmologyParams(param_file)
+        self.mesh = MeshMetadata(param_file)
         self.init_units()
+        
+        if block_list:
+            self.tree = BlockTree(block_list)
         
     def init_units(self):
         
@@ -45,3 +49,8 @@ class SimulationMetadata:
         # missing in the enzoe code base - see velociy_units in 
         # EnzoPhysicsCosmology.hpp)
         self.v_to_cgs = 1.0e7 * Li * np.sqrt(3 * Om * (1 + zi) / 2)
+        
+    def total_number_sites(self):
+        N_sites_per_block = self.mesh.get_bock_mesh_length()**3
+        N_leaf_blocks = self.tree.get_num_leaves()
+        return N_sites_per_block * N_leaf_blocks
