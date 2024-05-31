@@ -109,6 +109,7 @@ tcl = np.zeros(N)
 results = (rho, nds, div, rH2, tff, tcl)
 z = 0
 
+
 ti_file = time.time()
 ind = -1
 for file in md.tree.files.keys():
@@ -124,21 +125,58 @@ for file in md.tree.files.keys():
         
         # TODO: data.close()
     print('processing this file took', time.time() - ti_blocks)
+
         
-#%%
-# figure, axes = plt.subplots(nrows=3, ncols=1, figsize=(5, 10))
+#%% Without star formation thesholds
+figure, axes = plt.subplots(nrows=3, ncols=1, figsize=(5, 10))
 
-# axes[0].scatter(rho, rH2, alpha=0.2)
-# axes[0].set_xlabel('Density (cgs)')
-# axes[0].set_ylabel('H2 Density (cgs)')
+axes[0].scatter(rho, rH2, alpha=0.2)
+axes[0].set_xlabel('Density (cgs)')
+axes[0].set_ylabel('H2 Density (cgs)')
 
-# axes[1].scatter(tff, tcl, alpha=0.2)
-# axes[1].set_xlabel('Free-fall time (cgs)')
-# axes[1].set_ylabel('Cooling time (cgs)')
+axes[1].scatter(tff, tcl, alpha=0.2)
+axes[1].set_xlabel('Free-fall time (cgs)')
+axes[1].set_ylabel('Cooling time (cgs)')
 
-# axes[2].scatter(nds, div, alpha=0.2)
-# axes[2].set_xlabel('Number Density (cgs)')
-# axes[2].set_ylabel('Velocity Divergence (cgs)')
+axes[2].scatter(nds, div, alpha=0.2)
+axes[2].set_xlabel('Number Density (cgs)')
+axes[2].set_ylabel('Velocity Divergence (cgs)')
 
-# figure.suptitle(f'Redshift {z}')
-# figure.savefig('star_formation_scatter_plots.png', dpi=300)
+figure.suptitle(f'Redshift {z}')
+figure.savefig('star_formation_scatter_plots.png', dpi=300)
+
+
+#%% With star formation thesholds
+figure, axes = plt.subplots(nrows=3, ncols=1, figsize=(5, 10))
+
+axes[0].scatter(rho, rH2, alpha=0.2)
+axes[0].set_xlabel('Density (cgs)')
+axes[0].set_ylabel('H2 Density (cgs)')
+
+# rho_h2 >= 0.0001 * rho_b line
+xi, xf = axes[0].get_xlim()
+axes[0].plot([0, xf], [0, 0.0001 * xf], color='black')
+
+axes[1].scatter(tff, tcl, alpha=0.2)
+axes[1].set_xlabel('Free-fall time (cgs)')
+axes[1].set_ylabel('Cooling time (cgs)')
+
+# tff < t_cool line
+xi, xf = axes[1].get_xlim()
+axes[1].plot([0, xf], [0, xf], color='black')
+
+axes[2].scatter(nds, div, alpha=0.2)
+axes[2].set_xlabel('Number Density (cgs)')
+axes[2].set_ylabel('Velocity Divergence (cgs)')
+
+# div_v < 0 line
+xi, xf = axes[2].get_xlim()
+xf = max(xf, 100)
+axes[2].hlines(0, xi, xf, color='black')
+
+# ndens >= 100 line
+yi, yf = axes[2].get_ylim()
+axes[2].vlines(100, yi, yf, color='black')
+
+figure.suptitle(f'Redshift {z}')
+figure.savefig('star_formation_scatter_plots_thresholds.png', dpi=300)
